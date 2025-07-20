@@ -1,0 +1,7 @@
+[
+  {
+    "deviceId": "abc123",
+    "temperature": 24.5,
+    "humidity": 60
+  }
+]

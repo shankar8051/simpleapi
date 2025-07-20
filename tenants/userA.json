@@ -1,0 +1,15 @@
+
+{
+  "db": "sqlite",
+  "channels": ["http"],
+  "routes": {
+    "/sensor": {
+      "schema": {
+        "deviceId": "text,required",
+        "temperature": "num",
+        "humidity": "num"
+      },
+      "middleware": "authMiddleware"
+    }
+  }
+}

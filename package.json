@@ -1,0 +1,40 @@
+{
+  "name": "simpleapi",
+  "version": "1.0.0",
+  "description": "A pluggable, schema-aware, multi-DB, multi-channel API engine for IoT",
+  "main": "index.js",
+  "scripts": {
+    "start": "node examples/server.js",
+    "dev": "nodemon examples/server.js",
+    "test": "node test/test.js"
+  },
+  "keywords": [
+    "api",
+    "express",
+    "iot",
+    "mqtt",
+    "websocket",
+    "sqlite",
+    "mongodb",
+    "mysql",
+    "plugin",
+    "multi-tenant"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.10.0",
+    "bcryptjs": "^3.0.2",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.17.0",
+    "mqtt": "^5.13.2",
+    "mysql2": "^3.14.2",
+    "node-fetch": "^2.7.0",
+    "sqlite3": "^5.1.7",
+    "ws": "^8.18.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}

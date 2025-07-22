@@ -1,45 +1,40 @@
 const express = require('express');
-const simpleAPI = require('../index');
-const { register, login, guard } = require('../plugins/auth');
+const simpleAPI = require('../index'); // तपाईंको main simpleAPI फाइल
 
 const app = express();
+app.use(express.json()); // JSON body parser
 
+// SimpleAPI instance
 const api = simpleAPI({
   app,
-  channels: ['http', 'mqtt'],
-  mqttOptions: { host: 'mqtt://localhost:1883' },
-  db: 'mongo',
-  plugins: ['auth'],
-  config: { db: 'mongo' }
+  db: 'mongo',              // globally active DB
+  plugins: [],              // no middleware plugins
+  config: { db: 'mongo' }   // optional config
 });
-api.get('/get', (req, res) => {
-  res.send(`
-    <html>
-      <head><title>Test Page</title></head>
-      <body>
-        <h1>✅ This is /get endpoint!</h1>
-        <p>Your API is working perfectly.</p>
-      </body>
-    </html>
-  `);
-}, 'html');
 
-api.post('/register', register({ dbName: 'mongo' }), {
-  email: 'required,text',
-  password: 'required,text',
-  role: 'text'
+// ✅ CRUD without middleware, using 'mongo' as dbName
+
+// GET all items
+api.get('/items', 'mongo');
+
+// GET by filter via query (?name=abc)
+api.get('/items/:id', 'mongo');
+
+// POST new item
+api.post('/items', 'mongo', {
+  name: 'required,text',
+  value: 'required,number'
 }, 'json');
 
-api.post('/login', login({ dbName: 'mongo' }), {
-  email: 'required,text',
-  password: 'required,text'
+// PUT update item (filtered by query e.g. ?name=abc)
+api.put('/items', 'mongo', {
+  name: 'text',
+  value: 'number'
 }, 'json');
 
-api.get('/secure-admin', guard({ roles: ['admin'] }), (req, res) => {
-  res.json({ message: 'Welcome, admin!', user: req.user });
-}, 'json');
+// DELETE by filter (e.g. ?name=abc)
+api.delete('/items', 'mongo', 'json');
+
 api.app.listen(3000, () => {
-  console.log('✅ HTTP server listening on port 3000');
-}).on('error', (err) => {
-  console.error('❌ Server error:', err);
+  console.log('✅ Server listening at http://localhost:3000');
 });

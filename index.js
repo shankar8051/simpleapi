@@ -5,18 +5,19 @@ const dbSelector = require('./db').get;
 const channelManager = require('./core/channelManager');
 
 function simpleAPI(config = {}) {
-  const app = express();
+  const app = config.app || express(); // app config बाट नआए नयाँ बनाउने
   app.use(express.json());
+  app.use(express.urlencoded({ extended: true }));
 
-  // DB name select गर्नुहोस् config.db बाट नभए 'json' default
-  const selectedDbName = config.db || 'json';
+  const selectedDbName = config.db || (config.config?.db) || 'json';
 
-  // DB map create गर्नुहोस्
+  // DB instance ल्याउने
+  const dbInstance = dbSelector(selectedDbName);
+
   const dbMap = {
-    [selectedDbName]: dbSelector(selectedDbName)
+    [selectedDbName]: dbInstance
   };
 
-  // DB interface जसले dbMap बाट db instance ल्याउँछ
   const db = {
     get: (name) => {
       const result = dbMap[name] || null;
@@ -25,30 +26,24 @@ function simpleAPI(config = {}) {
     }
   };
 
-  // Context मा सबै राख्नुहोस्
   const context = {
     app,
     db,
     config,
-    channels: config.channels || ['http'],    // default HTTP channel
+    channels: config.channels || ['http'],
     mqttOptions: config.mqttOptions || {}
   };
 
-  // app मा context attach गरेर future debugging सजिलो
   app.__context = context;
 
-  // ChannelManager init call (HTTP, MQTT, WS सब handled भित्रै)
   channelManager.init(context);
 
-  // Plugins load गर्नुहोस् (जस्तै auth)
   if (config.plugins) {
     load(context, config.plugins);
   }
 
-  // Router wrap गर्नुहोस् र context pass गर्नुहोस्
   const wrappedRouter = router(context);
 
-  // API interface फर्काउनुहोस्
   return {
     post: (...args) => wrappedRouter.post(...args),
     get: (...args) => wrappedRouter.get(...args),

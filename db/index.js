@@ -1,5 +1,3 @@
-// db/index.js
-
 const jsonDB = require('./json');
 const sqliteDB = require('./sqlite');
 const mongoDB = require('./mongo');
